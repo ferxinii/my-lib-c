@@ -5,6 +5,12 @@ double **malloc_matrix(int N1, int N2);
 
 void free_matrix(double **array, int N1);
 
+void print_matrix(double **matrix, int N_rows, int N_cols);
+
+double determinant(double **matrix, int N);
+
+double **new_matrix_removed_row_column(double **matrix, int N, int row, int col);
+
 void multiply_matrices_2(double **A, double **B, double **out);
 
 void equal_matrices_2(double **in, double **out);

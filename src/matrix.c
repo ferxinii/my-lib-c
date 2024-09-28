@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include "matrix.h"
 
 
 double **malloc_matrix(int N1, int N2)
@@ -19,6 +20,55 @@ void free_matrix(double **array, int N1)
         free(array[ii]);
     }
     free(array);
+}
+
+
+void print_matrix(double **matrix, int N_rows, int N_cols)
+{   
+    for (int ii=0; ii<N_rows; ii++) {
+        for (int jj=0; jj<N_cols; jj++) {
+            printf("%f  ", matrix[ii][jj]);
+        }
+        printf("\n");
+    }
+}
+
+
+double determinant(double **matrix, int N)
+{   
+    double det = 0;
+    if (N == 2) {
+        det = matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];   
+    } else {
+        int sign = 1;
+        for (int irow=0; irow<N; irow++) {
+            double **reduced = new_matrix_removed_row_column(matrix, N, irow, 0);
+            det += sign * matrix[irow][0] * determinant(reduced, N-1);
+            sign *= -1;
+            free_matrix(reduced, N-1);
+        }
+    }
+    return det;   
+}
+
+
+double **new_matrix_removed_row_column(double **matrix, int N, int row, int col)
+{
+    int ii_eff = 0, jj_eff = 0;
+    double **out = malloc_matrix(N-1, N-1);
+    for (int ii=0; ii<N; ii++) {
+        if (ii != row) {
+            jj_eff = 0;
+            for (int jj=0; jj<N; jj++) {
+                if (jj != col) {
+                    out[ii_eff][jj_eff] = matrix[ii][jj];
+                    jj_eff++;
+                }
+            }
+            ii_eff++;
+        }
+    }
+    return out;
 }
 
 
@@ -83,4 +133,5 @@ void inverse_matrix_2(double **in, double **out)
     out[1][0] = - 1 / det * in[1][0];
     out[1][1] = 1 / det * in[1][1];
 }
+
 
