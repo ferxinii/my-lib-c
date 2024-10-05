@@ -11,6 +11,8 @@ double determinant(double **matrix, int N);
 
 double **new_matrix_removed_row_column(double **matrix, int N, int row, int col);
 
+double dot_product(double *v1, double *v2, double N);
+
 void multiply_matrices_2(double **A, double **B, double **out);
 
 void equal_matrices_2(double **in, double **out);

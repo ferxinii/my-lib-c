@@ -85,9 +85,26 @@ void add_array_points(FILE *pipe, double **points, int N, const char *config)
 }
 
 
+void add_arrows_from_array_points(FILE* pipe, double **points, int N, int spacing, int offset, const char *config)
+{   
+    fprintf(pipe, "\"<echo \'");
+    for (int ii=0; ii<N; ii++) {
+        if ((offset +ii)%spacing == 0 && ii+1 < N) {
+            fprintf(pipe, "%f %f %f %f", points[ii][0], points[ii][1], points[ii+1][0]-points[ii][0], points[ii+1][1]-points[ii][1]);
+        }
+
+        if (ii < N-1) {
+            fprintf(pipe, "\\n");
+        }
+    }
+    fprintf(pipe, "\'\" w vectors %s, ", config);
+
+}
+
+
 void add_yline(FILE *pipe, double y, const char *config) 
 {
-    fprintf(pipe, "\"<echo \'%f %f\\n%f %f'\" %s, ", 0.0, y, 1.0, y, config);
+    fprintf(pipe, "\"<echo \'%f %f\\n%f %f'\" w l %s, ", 0.0, y, 1.0, y, config);
 }
 
 

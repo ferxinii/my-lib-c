@@ -19,6 +19,8 @@ void add_point(FILE *pipe, double x, double y, const char *config);
 
 void add_array_points(FILE *pipe, double **points, int N, const char *config);
 
+void add_arrows_from_array_points(FILE* pipe, double **points, int N, int spacing, int offset, const char *config);
+
 void add_yline(FILE *pipe, double y, const char *config);
 
 void add_line(FILE *pipe, double x0, double xf, double y0, double yf, const char *config);

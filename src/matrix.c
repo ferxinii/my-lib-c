@@ -72,6 +72,16 @@ double **new_matrix_removed_row_column(double **matrix, int N, int row, int col)
 }
 
 
+double dot_product(double *v1, double *v2, double N)
+{
+    double out = 0;
+    for (int ii=0; ii<N; ii++) {
+        out += v1[ii] * v2[ii];
+    }
+    return out;
+}
+
+
 void multiply_matrices_2(double **A, double **B, double **out)
 {
     out[0][0] = A[0][0]*B[0][0] + A[0][1]*B[1][0];
@@ -133,5 +143,6 @@ void inverse_matrix_2(double **in, double **out)
     out[1][0] = - 1 / det * in[1][0];
     out[1][1] = 1 / det * in[1][1];
 }
+
 
 
