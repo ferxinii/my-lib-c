@@ -11,10 +11,13 @@ double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_bac
 {
     static int tag = 0; tag++;
     double **orbit = malloc_matrix(N_steps_forward + N_steps_backward, dim);
+    if (!orbit) {
+        printf("Error allocating array for orbit!\n");  exit(1);
+    }
     double t = 0;
     double delta_t = abs_total_time / (N_steps_forward + N_steps_backward);  
     double log10abserr = log10(1e-16), log10relerr = log10(1e-16);
-    double x[4];
+    double x[dim];
     equal_vectors(x0, x, dim);
 
     // Forward
