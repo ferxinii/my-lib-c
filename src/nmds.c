@@ -48,6 +48,18 @@ double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_bac
 }
 
 
+double ***sample_orbits(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT *, int, int, double, double, MY_FLOAT *, MY_FLOAT *, int *, MY_JET *, int),
+                        double **array_IC, int N_IC, int dim, int abs_total_time, int N_steps_forward, int N_steps_backward)
+{
+    double ***orbits = malloc(sizeof(double **) * N_IC);
+    for (int ii=0; ii<N_IC; ii++) {
+        orbits[ii] = integrate_orbit(taylor_uniform_step__ODE_NAME__tag, array_IC[ii], 
+                                     dim, abs_total_time, N_steps_forward, N_steps_backward);
+    }
+    return orbits;
+}
+
+
 void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *title, const char *file_name, 
                     int mark_IC, double *plotDimensions_x0_xf_y0_yf, int *arrows_freq_offset)
 {
@@ -223,4 +235,18 @@ double poincare_t(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT
     }
 
     return t;
+}
+
+
+double max_abs_diff_w_initial(double (*fun)(double *x), double **orbit, int N_steps)
+{
+
+    double val0 = fun(orbit[0]);
+
+    double max = 0;
+    for (int ii=0; ii<N_steps; ii++) {
+        double val = fun(orbit[ii]);
+        if (fabs(val - val0) > max) max = fabs(val - val0);
+    }
+    return max;
 }

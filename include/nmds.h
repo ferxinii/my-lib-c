@@ -6,6 +6,9 @@ typedef double MY_FLOAT;
 double **integrate_orbit(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT *, int, int, double, double, MY_FLOAT *, MY_FLOAT *, int *, MY_JET *, int),
                          double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_backward);
 
+double ***sample_orbits(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT *, int, int, double, double, MY_FLOAT *, MY_FLOAT *, int *, MY_JET *, int),
+                        double **array_IC, int N_IC, int dim, int abs_total_time, int N_steps_forward, int N_steps_backward);
+
 void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *title, const char *file_name, 
                     int mark_IC, double *plotDimensions_x0_xf_y0_yf, int *arrows_freq_offset);
 
@@ -18,4 +21,6 @@ double poincare_t(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT
         double (*g)(double *x), void (*grad_g)(double *x, double *out), 
         void (*vector_field)(double *x, double *out),
         int dim, double *x0, int dir, double tol, int itmax, int n_crossings);
+
+double max_abs_diff_w_initial(double (*fun)(double *x), double **orbit, int N_steps);
 
