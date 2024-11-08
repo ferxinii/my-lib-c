@@ -49,7 +49,7 @@ double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_bac
 
 
 double ***sample_orbits(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT *, int, int, double, double, MY_FLOAT *, MY_FLOAT *, int *, MY_JET *, int),
-                        double **array_IC, int N_IC, int dim, int abs_total_time, int N_steps_forward, int N_steps_backward)
+                        double **array_IC, int N_IC, int dim, double abs_total_time, int N_steps_forward, int N_steps_backward)
 {
     double ***orbits = malloc(sizeof(double **) * N_IC);
     for (int ii=0; ii<N_IC; ii++) {
@@ -60,15 +60,55 @@ double ***sample_orbits(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY
 }
 
 
+double **initial_conditions_circle(double x, double y, double r, int N)
+{
+    double dth = 2 * M_PI / (N - 1);
+    double th = 0;
+    double **out = malloc_matrix(N, 2);
+    for (int ii=0; ii<N; ii++) {
+        out[ii][0] = x + r * cos(th);
+        out[ii][1] = y + r * sin(th);
+        th += dth;
+    }
+    return out;
+}
+
+
+double **initial_conditions_grid(double xmin, double xmax, double ymin, double ymax, double Nx, double Ny)
+{
+    double **out = malloc_matrix(Nx * Ny, 2);
+    int kk = 0;
+    for (int ii=0; ii<Nx; ii++) {
+        for (int jj=0; jj<Ny; jj++) {
+            out[kk][0] = xmin + ii * (xmax - xmin)/(Nx - 1);
+            out[kk][1] = ymin + jj * (ymax - ymin)/(Ny - 1);
+            kk++;
+        }
+    }
+    return out;
+}
+
+
+double **initial_conditions_line(double xmin, double xmax, double ymin, double ymax, double N)
+{
+    double **out = malloc_matrix(N, 2);
+    for (int ii=0; ii<N; ii++) {
+        out[ii][0] = xmin + ii * (xmax - xmin)/(N - 1);
+        out[ii][1] = ymin + ii * (ymax - ymin)/(N - 1);
+    }
+    return out;
+}
+
+
 void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *title, const char *file_name, 
-                    int mark_IC, double *plotDimensions_x0_xf_y0_yf, int *arrows_freq_offset)
+                    int mark_IC, double *plotDimensions_x0_xf_y0_yf, char *config, double *arrows_size_freq_offset)
 {
     FILE *pipe = popen_gnuplot();
     char buffer[256];
     if (plotDimensions_x0_xf_y0_yf) {
         snprintf(buffer, 256, "set xrange[%f:%f]", plotDimensions_x0_xf_y0_yf[0], plotDimensions_x0_xf_y0_yf[1]);
         set_config(pipe, buffer);
-        snprintf(buffer, 256, "set yrange[%f:%f]", plotDimensions_x0_xf_y0_yf[0], plotDimensions_x0_xf_y0_yf[1]);
+        snprintf(buffer, 256, "set yrange[%f:%f]", plotDimensions_x0_xf_y0_yf[2], plotDimensions_x0_xf_y0_yf[3]);
         set_config(pipe, buffer);
     }
     set_config(pipe, "set xlabel 'x'");
@@ -83,10 +123,11 @@ void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *
         if (mark_IC == 1) {
             add_point(pipe, orbits_xy[ii][0][0], orbits_xy[ii][0][1], "ps 2 pt 7 lc 8 notitle");
         }
-        if (arrows_freq_offset) {
-            add_array_points(pipe, orbits_xy[ii], N_steps, "w l lw 2 lc 2 notitle");
-            add_arrows_from_array_points(pipe, orbits_xy[ii], N_steps, arrows_freq_offset[0], ii*arrows_freq_offset[1],
-                                         "lc 2 lw 3 size 0.008,20 fixed notitle");
+        add_array_points(pipe, orbits_xy[ii], N_steps, config);
+        if (arrows_size_freq_offset) {
+            snprintf(buffer, 256, "lc 2 lw 3 size %f,20 fixed notitle", arrows_size_freq_offset[0]);
+            add_arrows_from_array_points(pipe, orbits_xy[ii], N_steps, arrows_size_freq_offset[1], ii*arrows_size_freq_offset[2],
+                                         buffer);
         }
     }
     end_plot(pipe);
@@ -122,7 +163,6 @@ double newton_method_1D(double (*fun)(double), double (*dfun)(double), double x0
 void newton_method_vectorial(void (*fun)(double *in, double *out), void (*jacobian)(double *in, double **out), 
                                int dim, double *x0, double *x_out, double eps, int itmax, int verbose)
 {
-    
     double *x = malloc(sizeof(double) * dim);
     double *x_prev = malloc(sizeof(double) * dim);
     double *fx_prev = malloc(sizeof(double) * dim);

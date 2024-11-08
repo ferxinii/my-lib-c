@@ -172,6 +172,14 @@ void sum_vectors(double *in, double *value, double *out, int N)
 }
 
 
+void subtract_vectors(double *in1, double *in2, double *out, int N)
+{
+    for (int ii=0; ii<N; ii++) {
+        out[ii] = in1[ii] - in2[ii];
+    }
+}
+
+
 void multiply_matrix_vector(double **matrix, double *vec, double *out, int N)
 {
     for (int ii=0; ii<N; ii++) {
@@ -275,4 +283,67 @@ void backward_substitution(double **U, double *Y, double *X, int N)
 }
 
 
+void normalize_vector(double *inout, int dim)
+{
+    double norm = 0;
+    for (int ii=0; ii<dim; ii++) {
+        norm += inout[ii] * inout[ii];
+    }
+    norm = sqrt(norm);
+    
+    for (int ii=0; ii<dim; ii++) {
+        inout[ii] = inout[ii] / norm;
+    }
+}
 
+
+void find_eigenvector(double **mat, int dim, double shift, double *out, int max_it, double tol)
+{
+    for (int ii=0; ii<dim; ii++) {  // Initial guess is vector (1, 1, ... 1)
+        out[ii] = 1;  
+    }
+    normalize_vector(out, dim);
+    
+    double **aux1 = malloc_matrix(dim, dim);  //  A - s * Id
+    for (int ii=0; ii<dim; ii++) {
+        for (int jj=0; jj<dim; jj++) {
+            if (ii == jj) {
+                aux1[ii][jj] = mat[ii][jj] - shift;
+            } else {
+                aux1[ii][jj] = mat[ii][jj];
+            }
+        }
+    }
+    
+    double **aux2 = malloc_matrix(dim, dim);  // inverse of aux1
+    inverse_matrix(aux1, aux2, dim);
+    
+    double *prev_vec = malloc(sizeof(double) * dim);
+    double *diff_vec = malloc(sizeof(double) * dim);
+    equal_vectors(out, prev_vec, dim);
+    int it = 0;
+    for (it=0; it<max_it; it++) {
+        multiply_matrix_vector(aux2, prev_vec, out, dim);
+        normalize_vector(out, dim);
+
+       // Ensure consistent direction w dot product w prev_vec
+        double dot_product = 0;
+        for (int jj = 0; jj < dim; jj++) {
+            dot_product += out[jj] * prev_vec[jj];
+        }
+        if (dot_product < 0) {
+            for (int jj = 0; jj < dim; jj++) {
+                out[jj] = -out[jj];   
+            }
+        }
+
+        subtract_vectors(out, prev_vec, diff_vec, dim);
+        equal_vectors(out, prev_vec, dim);
+        if (vector_components_are_lt_abs(diff_vec, dim, tol)) break;
+    }
+    
+    if (it >= max_it - 1) {
+        printf("Reached maximum iters approximating eigenvector...");
+        exit(1);
+    }
+}

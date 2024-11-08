@@ -29,6 +29,8 @@ void inverse_matrix_2(double **in, double **out);
 
 int vector_components_are_lt_abs(double *vec, int N, double value);
 
+void subtract_vectors(double *in1, double *in2, double *out, int N);
+
 void sum_vectors(double *in, double *value, double *out, int N);
 
 void multiply_matrix_vector(double **matrix, double *vec, double *out, int N);
@@ -42,5 +44,9 @@ void lu_decomposition(double **A, double **L, double **U, int N);
 void forward_substitution(double **L, double *B, double *Y, int N);
 
 void backward_substitution(double **U, double *Y, double *X, int N);
+
+void normalize_vector(double *inout, int dim);
+
+void find_eigenvector(double **mat, int dim, double shift, double *out, int max_it, double tol);
 
 #endif

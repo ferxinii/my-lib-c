@@ -7,10 +7,16 @@ double **integrate_orbit(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, M
                          double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_backward);
 
 double ***sample_orbits(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT *, int, int, double, double, MY_FLOAT *, MY_FLOAT *, int *, MY_JET *, int),
-                        double **array_IC, int N_IC, int dim, int abs_total_time, int N_steps_forward, int N_steps_backward);
+                        double **array_IC, int N_IC, int dim, double abs_total_time, int N_steps_forward, int N_steps_backward);
+
+double **initial_conditions_circle(double x, double y, double r, int N);
+
+double **initial_conditions_grid(double xmin, double xmax, double ymin, double ymax, double Nx, double Ny);
+
+double **initial_conditions_line(double xmin, double xmax, double ymin, double ymax, double N);
 
 void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *title, const char *file_name, 
-                    int mark_IC, double *plotDimensions_x0_xf_y0_yf, int *arrows_freq_offset);
+                    int mark_IC, double *plotDimensions_x0_xf_y0_yf, char *config, double *arrows_freq_offset);
 
 double newton_method_1D(double (*fun)(double), double (*dfun)(double), double x0, double eps, int itmax, int verbose);
 
