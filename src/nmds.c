@@ -214,67 +214,79 @@ double poincare_t(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT
         int dim, 
         double *x0, 
         int dir, 
-        double tol, 
+        double tol,
         int itmax, 
         int n_crossings)
 {
-    // We consider the poincare section y = 0, g(x,y) = y
+    // We consider the poincare section g(x,y) = 0
     // We want to find t such that g(phi(t,x0)) = 0
     // That is, the zero of the function G(t) = g(phi(t,x0))
     
     // First, find the initial guess taking into account n_crossings
-    double t = 0;
+    double t;
     double log10abserr = log10(1e-16), log10relerr = log10(1e-16);
-    double delta_t = 0.1;  // ATTENTION This is arbitrary...
-    int counter_crossings = 0;  
+    double delta_t_aux = 1e-1, delta_t;  // ATTENTION This is arbitrary...
+    int counter_crossings;  
     double x[dim]; 
-    equal_vectors(x0, x, dim);
     double t_prev, x_prev[dim];
     int out;
-    while (counter_crossings != n_crossings) {
-        t_prev = t;
-        equal_vectors(x, x_prev, dim);
-        out = taylor_uniform_step__ODE_NAME__tag(&t, x, dir, 1, log10abserr, log10relerr, 
-                                                 NULL, &delta_t, NULL, NULL, 0);
-        if (out != 0) {
-            printf("Something went wrong in Taylor step...\n");
-            exit(1);
+    
+    int max_tries = 5;
+    for (int ii=0; ii<max_tries; ii++) {
+        t = 0;
+        counter_crossings = 0;
+        equal_vectors(x0, x, dim);
+
+        delta_t = delta_t_aux;
+        while (counter_crossings != n_crossings) {
+            t_prev = t;
+            equal_vectors(x, x_prev, dim);
+            out = taylor_uniform_step__ODE_NAME__tag(&t, x, dir, 1, log10abserr, log10relerr, 
+                                                     NULL, &delta_t, NULL, NULL, 0);
+            if (out != 0) {
+                printf("Something went wrong in Taylor step...\n");
+                exit(1);
+            }
+            if (g(x_prev) * g(x) < 0) counter_crossings++;
         }
-        if (g(x_prev) * g(x) < 0) counter_crossings++;
-    }
-    // initial guess is t_prev, and t_prev < tau < t    
-
-    // Now, iterate using Newton's method:
-    t = t_prev;
-    equal_vectors(x_prev, x, dim);
-    int it = 0;
-    while (fabs(g(x)) > tol && it < itmax) {
-        it++;
-        double Dg[dim], vf[dim];
-        double denom;    
-
-        grad_g(x, Dg);
-        vector_field(x, vf);
-        denom = dot_product(Dg, vf, dim);  // != 0 by definition (g transversal)
-
-        delta_t = - g(x) / denom;
+        // initial guess is t_prev, and t_prev < tau < t    
         
-        // Update position and time
-        dir = sign(delta_t);
-        out = taylor_uniform_step__ODE_NAME__tag(&t, x, dir, 1, log10abserr, log10relerr, 
-                                                 NULL, &delta_t, NULL, NULL, it);
-        if (out != 0) {
-            printf("Something went wrong in Taylor step...\n");
-            exit(1);
+        // Now, iterate using Newton's method:
+        t = t_prev;
+        equal_vectors(x_prev, x, dim);
+        int it = 0;
+        while (fabs(g(x)) > tol && it < itmax) {
+            it++;
+            double Dg[dim], vf[dim];
+            double denom;    
+
+            grad_g(x, Dg);
+            vector_field(x, vf);
+            denom = dot_product(Dg, vf, dim);  // != 0 by definition (g transversal)
+
+            delta_t = - g(x) / denom;
+            
+            // Update position and time
+            dir = sign(delta_t);
+            out = taylor_uniform_step__ODE_NAME__tag(&t, x, dir, 1, log10abserr, log10relerr, 
+                                                     NULL, &delta_t, NULL, NULL, it);
+            if (out != 0) {
+                printf("Something went wrong in Taylor step...\n");
+                exit(1);
+            }
         }
+
+        if (it < itmax) {
+            return t;
+        }
+
+        delta_t_aux *= 0.1;
     }
 
-    if (it >= itmax) {
-        printf("Reached maximum iterations in Newton's...\n");
-        exit(1);
-    }
 
-    return t;
+    printf("Try %d in poincaré_t, delta_t = %f...\n", ii, delta_t_aux);
+    printf("Reached maximum iterations in Newton's...\n");
+    exit(1);
 }
 
 
