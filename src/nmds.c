@@ -284,7 +284,7 @@ double poincare_t(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT
     }
 
 
-    printf("Try %d in poincaré_t, delta_t = %f...\n", ii, delta_t_aux);
+    printf("Try %d in poincaré_t, delta_t = %f...\n", max_tries, delta_t_aux);
     printf("Reached maximum iterations in Newton's...\n");
     exit(1);
 }
