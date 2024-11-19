@@ -16,7 +16,7 @@ double **initial_conditions_grid(double xmin, double xmax, double ymin, double y
 double **initial_conditions_line(double xmin, double xmax, double ymin, double ymax, double N);
 
 void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *title, const char *file_name, 
-                    int mark_IC, double *plotDimensions_x0_xf_y0_yf, char *config, double *arrows_freq_offset);
+                    double *IC, double *plotDimensions_x0_xf_y0_yf, char *config, double *arrows_size_freq_offset);
 
 double newton_method_1D(double (*fun)(double), double (*dfun)(double), double x0, double eps, int itmax, int verbose);
 

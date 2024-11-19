@@ -9,7 +9,7 @@
 double **integrate_orbit(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT *, int, int, double, double, MY_FLOAT *, MY_FLOAT *, int *, MY_JET *, int),
 double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_backward)
 {
-    static int tag = 0; tag++;
+    static int tag = 1; tag++;
     double **orbit = malloc_matrix(N_steps_forward + N_steps_backward, dim);
     if (!orbit) {
         printf("Error allocating array for orbit!\n");  exit(1);
@@ -101,7 +101,7 @@ double **initial_conditions_line(double xmin, double xmax, double ymin, double y
 
 
 void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *title, const char *file_name, 
-                    int mark_IC, double *plotDimensions_x0_xf_y0_yf, char *config, double *arrows_size_freq_offset)
+                    double *IC, double *plotDimensions_x0_xf_y0_yf, char *config, double *arrows_size_freq_offset)
 {
     FILE *pipe = popen_gnuplot();
     char buffer[256];
@@ -120,8 +120,8 @@ void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *
 
     start_plot(pipe, file_name);
     for (int ii=0; ii<N_orbits; ii++) {
-        if (mark_IC == 1) {
-            add_point(pipe, orbits_xy[ii][0][0], orbits_xy[ii][0][1], "ps 2 pt 7 lc 8 notitle");
+        if (IC) {
+            add_point(pipe, IC[0], IC[1], "ps 2 pt 7 lc 8 notitle");
         }
         add_array_points(pipe, orbits_xy[ii], N_steps, config);
         if (arrows_size_freq_offset) {
