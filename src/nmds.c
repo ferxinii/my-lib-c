@@ -9,7 +9,8 @@
 double **integrate_orbit(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT *, int, int, double, double, MY_FLOAT *, MY_FLOAT *, int *, MY_JET *, int),
 double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_backward)
 {
-    static int tag = 1; tag++;
+    static int tag = 1;  //IMPORTANT TO START AT 1! In order to avoid colision with previous poincare_t potential call 
+    tag++;
     double **orbit = malloc_matrix(N_steps_forward + N_steps_backward, dim);
     if (!orbit) {
         printf("Error allocating array for orbit!\n");  exit(1);
