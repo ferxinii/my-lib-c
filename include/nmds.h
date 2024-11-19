@@ -26,7 +26,7 @@ void newton_method_vectorial(void (*fun)(double *in, double *out), void (*jacobi
 double poincare_t(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT *, int, int, double, double, MY_FLOAT *, MY_FLOAT *, int *, MY_JET *, int),
         double (*g)(double *x), void (*grad_g)(double *x, double *out), 
         void (*vector_field)(double *x, double *out),
-        int dim, double *x0, int dir, double tol, int itmax, int n_crossings);
+        int dim, double *x0, int dir, double t_steps_0, double tol, int itmax, int n_crossings);
 
 double max_abs_diff_w_initial(double (*fun)(double *x), double **orbit, int N_steps);
 

@@ -214,6 +214,7 @@ double poincare_t(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT
         int dim, 
         double *x0, 
         int dir, 
+        double t_steps_0,
         double tol,
         int itmax, 
         int n_crossings)
@@ -225,7 +226,7 @@ double poincare_t(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT
     // First, find the initial guess taking into account n_crossings
     double t;
     double log10abserr = log10(1e-16), log10relerr = log10(1e-16);
-    double delta_t_aux = 1e-1, delta_t;  // ATTENTION This is arbitrary...
+    double delta_t_aux = t_steps_0, delta_t;  // ATTENTION This is arbitrary...
     int counter_crossings;  
     double x[dim]; 
     double t_prev, x_prev[dim];
