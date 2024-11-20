@@ -136,6 +136,32 @@ void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *
 }
 
 
+double bisection_method_1D(double (*fun)(double), double x1, double x2, double tol, int it_max)
+{
+    if (fun(x1) * fun(x2) > 0) {
+        printf("f(x1) * f(x2) is not negative!\n");
+        exit(1);
+    }
+    
+    int it = 0;
+    double a = x1, b = x2, c;
+    while (fabs(a - b) > tol ) {
+        c = (a + b) / 2;
+        if (fun(a) * fun(c) < 0) {
+            b = c;
+        } else {
+            a = c;
+        }
+        it++;
+        if (it >= it_max) {
+            printf("Reached maximum iters in bisection method!\n");
+            exit(1);
+        }
+    }
+    return c;
+}
+
+
 double newton_method_1D(double (*fun)(double), double (*dfun)(double), double x0, double eps, int itmax, int verbose)
 {
     int it = 0;
