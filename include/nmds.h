@@ -3,6 +3,8 @@ typedef void* MY_JET;
 
 typedef double MY_FLOAT;
 
+int sign(double a);
+
 double **integrate_orbit(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT *, int, int, double, double, MY_FLOAT *, MY_FLOAT *, int *, MY_JET *, int),
                          double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_backward);
 
