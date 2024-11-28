@@ -11,6 +11,8 @@ double determinant(double **matrix, int N);
 
 double **new_matrix_removed_row_column(double **matrix, int N, int row, int col);
 
+double **new_arr_selected_columns(double **array, int N_rows, int N_cols, int *id_keep, int N_keep);
+
 double dot_product(double *v1, double *v2, double N);
 
 void equal_vectors(double *in, double *out, int N);

@@ -72,6 +72,22 @@ double **new_matrix_removed_row_column(double **matrix, int N, int row, int col)
 }
 
 
+double **new_arr_selected_columns(double **array, int N_rows, int N_cols, int *id_keep, int N_keep)
+{
+    double **out = malloc_matrix(N_rows, N_keep);
+    for (int kk=0; kk<N_keep; kk++) {
+        for (int jj=0; jj<N_cols; jj++) {
+            if (jj == id_keep[kk]) {
+                for(int ii=0; ii<N_rows; ii++) {
+                    out[ii][kk] = array[ii][jj];
+                }
+            }
+        }
+    }
+    return out;
+}
+
+
 double dot_product(double *v1, double *v2, double N)
 {
     double out = 0;

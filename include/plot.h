@@ -27,4 +27,7 @@ void add_line(FILE *pipe, double x0, double xf, double y0, double yf, const char
 
 void add_function(FILE *pipe, double x0, double xf, int N, double (*fun)(double), const char *config);
 
+void plot_array_2D(double **array, int N, const char *title, char *xlabel, char *ylabel, const char *file_name, 
+                   double *IC, double *plotDimensions_x0_xf_y0_yf, char *config, double *arrows_size_freq_offset);
+
 #endif
