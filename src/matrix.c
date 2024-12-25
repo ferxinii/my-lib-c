@@ -363,3 +363,56 @@ void find_eigenvector(double **mat, int dim, double shift, double *out, int max_
         exit(1);
     }
 }
+
+
+void matrix_multiplication(double **A, double **B, double **C, int m, int n, int p)
+{  // m: rows of A, n: cols of A, p: cols of B
+    for (int ii = 0; ii < m; ii++) {
+        for (int jj = 0; jj < p; jj++) {
+            C[ii][jj] = 0.0;
+            for (int kk = 0; kk < n; kk++) {
+                C[ii][jj] += A[ii][kk] * B[kk][jj];
+            }
+        }
+    }
+}
+
+
+void transpose(double **A, double **At, int m, int n)
+{   // m: rows of A, n: cols of A
+    for (int ii = 0; ii < m; ii++) {
+        for (int jj = 0; jj < n; jj++) {
+            At[jj][ii] = A[ii][jj];
+        }
+    }
+}
+
+
+void least_squares(double **A, double *b, double *x, int m, int n)
+{   // m: rows of A, n: columns of a
+    double **At = malloc_matrix(m, n);
+    double **AtA = malloc_matrix(n, n);
+    double *Atb = malloc(sizeof(double) * n);
+
+    transpose(A, At, m, n);
+    // Compute A^T * A
+    matrix_multiplication(At, A, AtA, n, m, n);
+    // Compute A^T * b
+    multiply_matrix_vector(At, b, Atb, n);
+
+    // Solve (A^T * A) * x = A^T * b
+    double **L = malloc_matrix(n, n);
+    double **U = malloc_matrix(n, n);
+    double *Y = malloc(sizeof(double) * n);
+    lu_decomposition(AtA, L, U, n);
+    forward_substitution(L, Atb, Y, n);
+    backward_substitution(U, Y, x, n);
+
+    // Free allocated memory
+    free_matrix(At, m);
+    free_matrix(AtA, n);
+    free(Atb);
+    free_matrix(L, n);
+    free_matrix(U, n);
+    free(Y);
+}

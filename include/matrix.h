@@ -51,4 +51,10 @@ void normalize_vector(double *inout, int dim);
 
 void find_eigenvector(double **mat, int dim, double shift, double *out, int max_it, double tol);
 
+void matrix_multiplication(double **A, double **B, double **C, int m, int n, int p);
+
+void transpose(double **A, double **At, int m, int n);
+
+void least_squares(double **A, double *b, double *x, int m, int n);
+
 #endif
