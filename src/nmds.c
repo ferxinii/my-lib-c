@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include "matrix.h"
 #include "plot.h"
 #include "nmds.h"
@@ -27,7 +28,7 @@ double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_bac
                                                    NULL, &delta_t, NULL, NULL, tag);
         if (out != 0) {
             printf("Error in Taylor!\n");
-            exit(1);
+            return NULL;
         }
         equal_vectors(x, orbit[ii], dim);
     }
@@ -40,7 +41,7 @@ double *x0, int dim, double abs_total_time, int N_steps_forward, int N_steps_bac
                                                    NULL, &delta_t, NULL, NULL, tag);
         if (out != 0) {
             printf("Error in Taylor!\n");
-            exit(1);
+            return NULL;
         }
         equal_vectors(x, orbit[ii], dim);
     }
@@ -124,7 +125,7 @@ void plot_orbits_2D(double ***orbits_xy, int N_orbits, int N_steps, const char *
         if (IC) {
             add_point(pipe, IC[0], IC[1], "ps 2 pt 7 lc 8 notitle");
         }
-        add_array_points(pipe, orbits_xy[ii], N_steps, config);
+        if (orbits_xy[ii]) add_array_points(pipe, orbits_xy[ii], N_steps, config);
         if (arrows_size_freq_offset) {
             snprintf(buffer, 256, "lc 2 lw 3 size %f,20 fixed notitle", arrows_size_freq_offset[0]);
             add_arrows_from_array_points(pipe, orbits_xy[ii], N_steps, arrows_size_freq_offset[1], ii*arrows_size_freq_offset[2],
@@ -187,7 +188,7 @@ double newton_method_1D(double (*fun)(double), double (*dfun)(double), double x0
 }
 
 
-void newton_method_vectorial(void (*fun)(double *in, double *out), void (*jacobian)(double *in, double **out), 
+int newton_method_vectorial(void (*fun)(double *in, double *out), void (*jacobian)(double *in, double **out), 
                                int dim, double *x0, double *x_out, double eps, int itmax, int verbose)
 {
     double *x = malloc(sizeof(double) * dim);
@@ -215,12 +216,13 @@ void newton_method_vectorial(void (*fun)(double *in, double *out), void (*jacobi
     }
     if (it >= itmax) {
         printf("Reached maximum iters in newton_method_vectorial!\n");
-        exit(1);
+        return 1;
     }
     equal_vectors(x, x_out, dim);
 
     free(x); free(x_prev); free(fx_prev); free(delta);
     free_matrix(J, dim); free_matrix(J_inv, dim);
+    return 0;
 }
 
 
@@ -273,7 +275,7 @@ double poincare_t(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT
                                                      NULL, &delta_t, NULL, NULL, 0);
             if (out != 0) {
                 printf("Something went wrong in Taylor step...\n");
-                exit(1);
+                return DBL_MAX;
             }
             if (g(x_prev) * g(x) < 0) counter_crossings++;
         }
@@ -314,7 +316,7 @@ double poincare_t(int (*taylor_uniform_step__ODE_NAME__tag)(MY_FLOAT *, MY_FLOAT
 
     printf("Try %d in poincaré_t, delta_t = %f...\n", max_tries, delta_t_aux);
     printf("Reached maximum iterations in Newton's...\n");
-    exit(1);
+    return DBL_MAX;
 }
 
 
